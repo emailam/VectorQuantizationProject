@@ -144,16 +144,7 @@ public class VectorQuantizationCompression {
         this.codebook = codebook;
         indexTable = new HashMap<>();
 
-        Vector<Vector<Double>> image = new Vector<>();
-        Scanner scanner = new Scanner(System.in);
-        for (int i = 0; i < 6; i++) {
-            Vector<Double> row = new Vector<>();
-            for (int j = 0; j < 6; j++) {
-                row.add(scanner.nextDouble());
-            }
-            image.add(row);
-        }
-        //Vector<Vector<Integer>> image = imageConverter(path);
+        Vector<Vector<Double>> image = imageConverter(path);
         for (int i = 0; i < image.size(); i += vectorHeight) {
             for (int j = 0; j < image.lastElement().size(); j += vectorHeight) {
                 Vector<Vector<Double>> tempBlock = new Vector<>();
@@ -173,7 +164,6 @@ public class VectorQuantizationCompression {
         }
         groups.put(0, vectorBlocks);
     }
-
 
     public Vector<Vector<Double>> ceilVector(Vector<Vector<Double>> v) {
         Vector<Vector<Double>> result = new Vector<>();
@@ -217,12 +207,18 @@ public class VectorQuantizationCompression {
                 Vector<Double> row = new Vector<>();
                 for (int j = 0; j < imageWidth; j++) {
                     int pixel = image.getRGB(j, i);
-                    double red = (pixel >> 16) & 0xff;
-                    row.add(red);
+
+                    // Extract color channels
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = pixel & 0xff;
+
+                    // Correctly average the channels to get grayscale value
+                    double grayscaleValue = (red + green + blue) / 3.0;
+                    row.add(grayscaleValue);
                 }
                 result.add(row);
             }
-
             return result;
 
         } catch (IOException e) {

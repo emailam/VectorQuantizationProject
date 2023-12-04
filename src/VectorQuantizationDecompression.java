@@ -17,15 +17,25 @@ public class VectorQuantizationDecompression {
         System.out.println(lookupTable);
     }
 
-    public void decompress() {
-        Double [][] image = new Double[imageHeight][imageWidth];
+    public Vector<Vector<Double>> decompress() {
+        Double[][] image = new Double[imageHeight][imageWidth];
+        int cnt = 0;
+        Vector<Vector<Double>> reconstructedImage = new Vector<>();
         for (int i = 0; i < imageHeight; i += vectorHeight) {
             for (int j = 0; j < imageWidth; j += vectorWidth) {
-                Vector<Vector<Double>> reconstructionValue = lookupTable.get(indexTable.get(j));
-                System.out.println(reconstructionValue);
+                Vector<Vector<Double>> reconstructionBlock = lookupTable.get(indexTable.get(cnt++));
+
+                for (int k = 0; k < vectorHeight; k++) {
+                    Vector<Double> row = new Vector<>();
+
+                    for (int l = 0; l < vectorWidth; l++) {
+                        row.add(reconstructionBlock.get(k).get(l));
+                    }
+
+                    reconstructedImage.add(row);
+                }
             }
         }
-        System.out.println(Arrays.deepToString(image));
+        return reconstructedImage;
     }
-
 }
